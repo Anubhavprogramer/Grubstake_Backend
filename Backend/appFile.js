@@ -26,6 +26,9 @@ import userRoute from "./routes/UserRoute.js";
 import adminRouter from "./routes/adminroute.js";
 
 // using the routes
+app.use("/",(req,res,next)=>{
+    res.send("Hello Your server is working")
+})
 app.use("/api/v1",SchollershipRouter)
 app.use("/api/v2",userRoute)
 app.use("/api/v3",bankrouter)
