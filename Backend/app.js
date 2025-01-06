@@ -1,36 +1,34 @@
-import express from "express";
-import cookieParser from "cookie-parser";
+import app from "./appFile.js";
+import connectDatabase from "./dataBase/database.js";
 
-import errorMiddleware from "./middleWares/err.js";
+import dotenv from "dotenv";
 
-import cors from "cors";
+// handleing uncaught exceptions
+process.on("uncaughtException",(err)=>{
+    console.log(`Error:${err.message}`);
+    console.log("Shutting down the server due to uncaught exception");
+    process.exit(1);
+})
 
-// route imports
-const app = express();
 
-// middlewares
-app.use(cors({
-    origin: "http://localhost:3000",
-}));
-app.use(express.json())
-app.use(cookieParser())
+//config
+dotenv.config({path:"Backend/config/config.env"})
 
-// route imports
+// connect to database
 
-import SchollershipRouter from "./routes/ScollershipRoute.js";
-import router from "./routes/adminroute.js";
-import bankrouter from "./routes/BankRoutes.js";
-import userRoute from "./routes/UserRoute.js";
-import adminRouter from "./routes/adminroute.js";
+connectDatabase()
+const PORT = process.env.PORT || 8000;
+app.listen(PORT,()=>{
+    console.log(`Server is on http://localhost:${process.env.PORT}`)
+})
 
-// using the routes
-app.use("/api/v1",SchollershipRouter)
-app.use("/api/v2",userRoute)
-app.use("/api/v3",bankrouter)
-app.use("/api/v5",router)
-app.use("/api/v6",adminRouter)
 
-// middleware to handle errors
-app.use(errorMiddleware);
 
-export default app;
+// unhandled promise rejection
+process.on("unhandledRejection",(err)=>{
+    console.log(`Error:${err.message}`);
+    console.log("Shutting down the server due to unhandled promise rejection");
+    server.close(()=>{
+        process.exit(1);
+    })
+})
