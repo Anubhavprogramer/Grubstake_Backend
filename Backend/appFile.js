@@ -10,7 +10,9 @@ const app = express();
 
 // middlewares
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FrontEndURL,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
 app.use(express.json())
 app.use(cookieParser())
