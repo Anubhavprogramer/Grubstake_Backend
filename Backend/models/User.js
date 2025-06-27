@@ -27,8 +27,8 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["user", "admin","manager","Bank","Institute"], // Defining the roles
-        default: "user" // Default role is 'user'
+        enum: ["User", "Admin", "Bank", "Institute"], // Standardized roles
+        default: "User" // Default role is 'User'
     },
     // loanId: {
     //     type: mongoose.Schema.Types.ObjectId,

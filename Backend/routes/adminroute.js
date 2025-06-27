@@ -7,15 +7,15 @@ import {
   getAllBanks,
   getBankById,
   deleteTheBank,
-  getAllInstitute,
-  getInstituteById,
-  DeleteTheInstituteAdmin,
   getAllSchollershipAdmin,
   getScholarshipByIdAdmin,
   DeleteTheScholarship,
   getAllLoansAdmin,
   getLoanByIdAdmin,
   DeleteTheLoan,
+  getAdminStats,
+  createScholarshipByAdmin,
+  updateScholarshipByAdmin,
 } from '../controller/adminController.js';
 import { authorizePplOnly, isAuthenticatedUser } from '../middleWares/auth.js';
 
@@ -32,19 +32,21 @@ adminRouter.get('/Admin/banks',isAuthenticatedUser,  authorizePplOnly("admin"), 
 adminRouter.get('/Admin/banks/:id',isAuthenticatedUser,  authorizePplOnly("admin"), getBankById);  //done
 adminRouter.delete('/Admin/banks/:id',isAuthenticatedUser,  authorizePplOnly("admin"), deleteTheBank);  //done
 
-// Institutes
-adminRouter.get('/Admin/institutes',isAuthenticatedUser,  authorizePplOnly("admin"), getAllInstitute);  //done
-adminRouter.get('/Admin/institutes/:id',isAuthenticatedUser,  authorizePplOnly("admin"), getInstituteById);  
-adminRouter.delete('/Admin/institutes/:id',isAuthenticatedUser,  authorizePplOnly("admin"), DeleteTheInstituteAdmin);
-
 // Scholarships
-adminRouter.get('/Admin/scholarships',isAuthenticatedUser,  authorizePplOnly("admin"), getAllSchollershipAdmin); //done
-adminRouter.get('/Admin/scholarships/:id',isAuthenticatedUser,  authorizePplOnly("admin"), getScholarshipByIdAdmin); //done
-adminRouter.delete('/Admin/scholarships/:id',isAuthenticatedUser,  authorizePplOnly("admin"), DeleteTheScholarship);  //done
+adminRouter.get('/Admin/scholarships',isAuthenticatedUser,  authorizePplOnly("Admin"), getAllSchollershipAdmin); //done
+adminRouter.get('/Admin/scholarships/:id',isAuthenticatedUser,  authorizePplOnly("Admin"), getScholarshipByIdAdmin); //done
+adminRouter.delete('/Admin/scholarships/:id',isAuthenticatedUser,  authorizePplOnly("Admin"), DeleteTheScholarship);  //done
+adminRouter.put('/Admin/scholarships/:id', isAuthenticatedUser, authorizePplOnly("Admin"), updateScholarshipByAdmin); // new
 
 // Loans
 adminRouter.get('/Admin/loans',isAuthenticatedUser,  authorizePplOnly("admin"), getAllLoansAdmin);  //done
 adminRouter.get('/Admin/loans/:id',isAuthenticatedUser,  authorizePplOnly("admin"), getLoanByIdAdmin);
 adminRouter.delete('/Admin/loans/:id',isAuthenticatedUser,  authorizePplOnly("admin"), DeleteTheLoan);
+
+// Admin stats
+adminRouter.get('/Admin/stats', isAuthenticatedUser, authorizePplOnly("Admin"), getAdminStats);
+
+// Admin create scholarship
+adminRouter.post('/Admin/scholarships', isAuthenticatedUser, authorizePplOnly("Admin"), createScholarshipByAdmin);
 
 export default adminRouter;

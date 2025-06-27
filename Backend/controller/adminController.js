@@ -103,40 +103,6 @@ export const deleteTheBank = asyncHandler(async (req,res,next)=>{
     })
 })
 
-//institute
-
-export const getAllInstitute = asyncHandler(async(req,res,next)=>{
-    const institute = await Institute.find();
-
-    res.status(200).json({
-        institute
-    })
-})
-
-export const getInstituteById = asyncHandler(async(req,res,next)=>{
-    const institute = await Institute.findById(req.body.id);
-
-    if(!institute){
-        return next(new ErrorHandler("Institute By this ID not found ",404))
-    }
-    res.status(200).json({
-        institute
-    })
-})
-
-export const DeleteTheInstituteAdmin = asyncHandler(async(req,res,next)=>{
-    const institute = await Institute.findById(req.params.id);
-
-    if(!institute){
-        return next(new ErrorHandler("Institute not found by this ID",404))
-    }
-
-    await institute.remove();
-    res.status(200).json({
-        success:true
-    })
-})
-
 //scollerships
 export const getAllSchollershipAdmin = asyncHandler(async(req,res,next)=>{
     const scholarship = await Scholarship.find();
@@ -203,3 +169,58 @@ export const DeleteTheLoan = asyncHandler(async(req,res,next)=>{
         success:true
     })
 })
+
+// Admin stats endpoint
+export const getAdminStats = asyncHandler(async (req, res, next) => {
+    const userCount = await User.countDocuments();
+    const bankCount = await Bank.countDocuments();
+    const loanCount = await Loan.countDocuments();
+    const scholarshipCount = await Scholarship.countDocuments();
+    res.status(200).json({
+        success: true,
+        stats: {
+            userCount,
+            bankCount,
+            loanCount,
+            scholarshipCount
+        }
+    });
+});
+
+// Admin create scholarship endpoint
+export const createScholarshipByAdmin = asyncHandler(async (req, res, next) => {
+    const { name, isGovernment, link, scholarshipType, avatar, Application_Starting, application_Closing, amount, eligibilityCriteria, provider } = req.body;
+    if (typeof isGovernment !== 'boolean') {
+        return next(new ErrorHandler('isGovernment must be true or false', 400));
+    }
+    const scholarship = await Scholarship.create({
+        name,
+        isGovernment,
+        link,
+        scholarshipType,
+        avatar,
+        Application_Starting,
+        application_Closing,
+        amount,
+        eligibilityCriteria,
+        provider,
+        instituteCreated: req.user._id // Admin's user id
+    });
+    res.status(201).json({
+        success: true,
+        scholarship
+    });
+});
+
+// Add update scholarship by ID
+export const updateScholarshipByAdmin = asyncHandler(async (req, res, next) => {
+    const scholarship = await Scholarship.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true, runValidators: true }
+    );
+    if (!scholarship) {
+        return next(new ErrorHandler("Scholarship not found", 404));
+    }
+    res.status(200).json({ success: true, scholarship });
+});
