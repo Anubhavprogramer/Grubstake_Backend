@@ -28,7 +28,7 @@ bankrouter.route("/bank/me/").get( isAuthenticatedBank, getBankDetails); //done
 bankrouter.route("/bank/me/updates/passwords").put( isAuthenticatedBank, changePasswordByUserofapp); //done
 bankrouter.route("/bank/me/update/profile").put( isAuthenticatedBank, updateBankProfile); //done
 
-bankrouter.route("/bank/loan").get(isAuthenticatedBank,getallLoans); //done
+bankrouter.route("/bank/loan").get(getallLoans); // public access
 bankrouter.route("/bank/user/loan").get(isAuthenticatedUser,getallLoans); //done
 bankrouter.route("/bank/user/loan/:id").get(isAuthenticatedUser, getLoansdetails); //done
 bankrouter.route("/bank/loan/:id").get(isAuthenticatedBank, getLoansdetails); //done

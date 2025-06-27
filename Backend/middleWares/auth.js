@@ -47,7 +47,10 @@ export const authorizePplOnly = (...roles) => {
 };
 
 export const isAuthenticatedBank =  asyncHandler(async (req, res, next) => {
-  const { token } = req.cookies;
+  let token = req.cookies.token;
+  if (!token && req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    token = req.headers.authorization.split(" ")[1];
+  }
 
   if(!token){
     return next(new ErrorHandler('Login first to access this resource.',401));

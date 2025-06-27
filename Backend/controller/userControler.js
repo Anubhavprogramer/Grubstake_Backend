@@ -8,9 +8,21 @@ import crypto from "crypto";
 
 // to register the user
 export const registerNewUser = asyncHandler(async (req, res, next) => {
-  const user = await User.create(req.body);
-
-  sendtoken(user, 201, res);
+  console.log("Register endpoint hit", req.body);
+  try {
+    const { username, email, password, role } = req.body;
+    if (!username || !email || !password || !role) {
+      return next(new ErrorHandler("All fields are required", 400));
+    }
+    if (password.length < 8) {
+      return next(new ErrorHandler("Password must be at least 8 characters", 400));
+    }
+    const user = await User.create({ username, email, password, role });
+    sendtoken(user, 201, res);
+  } catch (err) {
+    console.error("Error in registerNewUser:", err);
+    return next(new ErrorHandler("Internal server error", 500));
+  }
 });
 
 // to Login the user

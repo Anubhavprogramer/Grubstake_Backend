@@ -5,7 +5,17 @@ import ErrorHandler from "../utils/errorHandler.js";
 
 
 export const createLoan = asyncHandler(async (req,res,next)=>{
-    const newLone = await Loan.create(req.body);
+    // Set instituteCreated from req.bank or req.user
+    let instituteCreated = null;
+    if (req.bank && req.bank._id) {
+        instituteCreated = req.bank._id;
+    } else if (req.user && req.user._id) {
+        instituteCreated = req.user._id;
+    }
+    if (!instituteCreated) {
+        return next(new ErrorHandler("Unauthorized: No institute or bank context found.", 400));
+    }
+    const newLone = await Loan.create({ ...req.body, instituteCreated });
     res.status(200).json({
         success:true,
         newLone
