@@ -105,10 +105,11 @@ export const deleteTheBank = asyncHandler(async (req,res,next)=>{
 
 //scollerships
 export const getAllSchollershipAdmin = asyncHandler(async(req,res,next)=>{
-    const scholarship = await Scholarship.find();
+    const scholarships = await Scholarship.find();
     res.status(200).json({
-        scholarship
-    })
+        success: true,
+        scholarships
+    });
 })
 
 export const getScholarshipByIdAdmin = asyncHandler(async(req,res,next)=>{
@@ -189,9 +190,17 @@ export const getAdminStats = asyncHandler(async (req, res, next) => {
 
 // Admin create scholarship endpoint
 export const createScholarshipByAdmin = asyncHandler(async (req, res, next) => {
-    const { name, isGovernment, link, scholarshipType, avatar, Application_Starting, application_Closing, amount, eligibilityCriteria, provider } = req.body;
+    let { name, isGovernment, link, scholarshipType, avatar, Application_Starting, application_Closing, amount, eligibilityCriteria, provider } = req.body;
+    // Accept isGovernment as string or boolean
+    if (typeof isGovernment === 'string') {
+        isGovernment = isGovernment === 'true';
+    }
     if (typeof isGovernment !== 'boolean') {
         return next(new ErrorHandler('isGovernment must be true or false', 400));
+    }
+    // Validate required fields
+    if (!name || !link || !scholarshipType || !avatar || !Application_Starting || !application_Closing || !amount || !eligibilityCriteria || !provider) {
+        return next(new ErrorHandler('All fields are required', 400));
     }
     const scholarship = await Scholarship.create({
         name,
