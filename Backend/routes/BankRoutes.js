@@ -15,7 +15,7 @@ import {
   getLoansdetails,
   getallLoans,
 } from "../controller/LoanController.js";
-import { isAuthenticatedBank, isAuthenticatedUser } from "../middleWares/auth.js";
+import { isAuthenticatedBank, isAuthenticatedUser, isAuthenticatedBankOrAdmin } from "../middleWares/auth.js";
 
 const bankrouter = express.Router();
 
@@ -32,7 +32,7 @@ bankrouter.route("/bank/loan").get(getallLoans); // public access
 bankrouter.route("/bank/user/loan").get(isAuthenticatedUser,getallLoans); //done
 bankrouter.route("/bank/user/loan/:id").get(isAuthenticatedUser, getLoansdetails); //done
 bankrouter.route("/bank/loan/:id").get(isAuthenticatedBank, getLoansdetails); //done
-bankrouter.route("/bank/loan/create").post(isAuthenticatedBank, createLoan); //done
+bankrouter.route("/bank/loan/create").post(isAuthenticatedBankOrAdmin, createLoan); // allow both bank and admin
 bankrouter.route("/bank/loan/delete/:id").delete(isAuthenticatedBank, deleteLoan); //done
 
 

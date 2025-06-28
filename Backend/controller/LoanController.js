@@ -1,11 +1,20 @@
-import asyncHandler  from "../middleWares/catchAsyncErrors.js";
+import asyncHandler from "../middleWares/catchAsyncErrors.js";
 import Loan from "../models/Loans.js";
 import Apifeatures from "../utils/apiFeatures.js";
 import ErrorHandler from "../utils/errorHandler.js";
 
-
-export const createLoan = asyncHandler(async (req,res,next)=>{
-    // Set instituteCreated from req.bank or req.user
+// Create Loan (works for both admin and bank, with debug logging)
+export const createLoan = asyncHandler(async (req, res, next) => {
+    let { name, description, link, amount, eligibilityCriteria, interestRate, isActive, avatar } = req.body;
+    // Accept isActive as string or boolean
+    if (typeof isActive === 'string') {
+        isActive = isActive === 'true';
+    }
+    // Validate required fields
+    if (!name || !description || !link || !amount || !eligibilityCriteria || !interestRate || !avatar) {
+        return next(new ErrorHandler('All fields are required', 400));
+    }
+    // Set instituteCreated from req.bank (bank user) or req.user (admin)
     let instituteCreated = null;
     if (req.bank && req.bank._id) {
         instituteCreated = req.bank._id;
@@ -13,65 +22,66 @@ export const createLoan = asyncHandler(async (req,res,next)=>{
         instituteCreated = req.user._id;
     }
     if (!instituteCreated) {
-        return next(new ErrorHandler("Unauthorized: No institute or bank context found.", 400));
+        // Debug log
+        console.log('Loan creation failed: No bank or admin context found. req.user:', req.user, 'req.bank:', req.bank);
+        return next(new ErrorHandler("Unauthorized: No bank or admin context found. Please login as a bank or admin.", 401));
     }
-    const newLone = await Loan.create({ ...req.body, instituteCreated });
-    res.status(200).json({
-        success:true,
-        newLone
-    })
-})
-
-// ?? helps to get all the Schollerships from Databse
-export const getallLoans = asyncHandler( async(req,res,next) =>{
-    const resultperpage = 5; //this will store the number of products form the api
-    const LoanCount = await Loan.countDocuments();
-  
-    //calling featureapi's search function and storing the resultant object in apifeature variable
-    const apifeature = new Apifeatures(Loan.find(), req.query)
-      .search() // for search feature
-      .filter() // for filter feature
-      .pagination(resultperpage); // for adding pagination
-  
-    const loans = await apifeature.query; //search according to the query and store the data in products variable
-    res.status(200).json({
-      success: true,
-      loans,
-      LoanCount
+    // Debug log
+    console.log('Creating loan with:', { name, description, link, amount, eligibilityCriteria, interestRate, isActive, avatar, instituteCreated });
+    const loan = await Loan.create({
+        name,
+        description,
+        link,
+        amount,
+        eligibilityCriteria,
+        interestRate,
+        isActive,
+        avatar,
+        instituteCreated
+    });
+    res.status(201).json({
+        success: true,
+        loan
     });
 });
 
-
-// ?? helps to get single product by id
-export const getLoansdetails = asyncHandler(async (req,res,next)=>{
-    const detailsOfLoan = await Loan.findById(req.params.id);
-  
-    if(!detailsOfLoan){
-      return next(new ErrorHandler("Product not found",404));
-    }
-  
+// Get all loans
+export const getallLoans = asyncHandler(async (req, res, next) => {
+    const resultperpage = 5;
+    const LoanCount = await Loan.countDocuments();
+    const apifeature = new Apifeatures(Loan.find(), req.query)
+        .search()
+        .filter()
+        .pagination(resultperpage);
+    const loans = await apifeature.query;
     res.status(200).json({
-      success:true,
-      detailsOfLoan,
+        success: true,
+        loans,
+        LoanCount
     });
-  })
-  
-  //?? delete  the scholarship card prom DB
-  
-  export const deleteLoan = asyncHandler(async(req,res,next)=>{
-    const loan = await Loan.findById(req.params.id);
-  
-    if(!loan){
-      return next(new ErrorHandler("Product not found",404));
+});
+
+// Get single loan by id
+export const getLoansdetails = asyncHandler(async (req, res, next) => {
+    const detailsOfLoan = await Loan.findById(req.params.id);
+    if (!detailsOfLoan) {
+        return next(new ErrorHandler("Loan not found", 404));
     }
-  
-    // delete the card
-    await loan.deleteOne();
-  
-    // the send the response
-  
     res.status(200).json({
-      success:true,
-      message:"Product deleted Successfully",
-    })
-  })
+        success: true,
+        loan: detailsOfLoan,
+    });
+});
+
+// Delete loan by id
+export const deleteLoan = asyncHandler(async (req, res, next) => {
+    const loan = await Loan.findById(req.params.id);
+    if (!loan) {
+        return next(new ErrorHandler("Loan not found", 404));
+    }
+    await loan.deleteOne();
+    res.status(200).json({
+        success: true,
+        message: "Loan deleted successfully",
+    });
+});
