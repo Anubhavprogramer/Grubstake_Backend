@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backend Status</title>
+  <style>
+    body { background: #0a2540; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+    .status-box { background: #173a5e; padding: 2rem 3rem; border-radius: 1rem; box-shadow: 0 4px 24px #0002; text-align: center; }
+    h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+    p { font-size: 1.2rem; }
+    .time { color: #aee1fb; margin-top: 1rem; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="status-box">
+    <h1><%= status %></h1>
+    <p>Welcome to the Grubstake backend server.</p>
+    <div class="time">Server time: <%= time.toLocaleString() %></div>
+  </div>
+</body>
+</html> 

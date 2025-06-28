@@ -6,6 +6,14 @@ import cors from "cors";
 // route imports
 const app = express();
 
+// Optionally set up EJS for status page
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
 // CORS middleware (must be first)
 app.use(cors({
   origin: "http://localhost:3000",
@@ -25,6 +33,14 @@ app.options('*', (req, res) => {
 
 app.use(express.json())
 app.use(cookieParser())
+
+// Health/status route
+app.get('/', (req, res) => {
+  if (req.accepts('html')) {
+    return res.render('status', { status: 'Backend is running', time: new Date() });
+  }
+  res.json({ status: 'Backend is running', time: new Date() });
+});
 
 // route imports
 import SchollershipRouter from "./routes/ScollershipRoute.js";
